@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ne Kadar Ederdi?</title>
+<meta name="description" content="O zaman 2.000 TL'yi mevduata, dolara, euroya, altına ya da borsaya yatırsaydınız bugün ne kadar ederdi? 2003'ten bu yana gerçek verilerle, enflasyondan arındırılmış hesap.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mehmet-vural.github.io/ne-kadar-ederdi/">
+<meta property="og:title" content="Ne Kadar Ederdi? Mevduat, dolar, euro, altın, borsa">
+<meta property="og:description" content="Seçtiğiniz tarihte yatırdığınız para bugün ne kadar ederdi? 2003'ten bu yana gerçek verilerle, enflasyondan arındırılmış hesap.">
+<meta property="og:image" content="https://mehmet-vural.github.io/ne-kadar-ederdi/docs/ekran.png">
+<meta name="author" content="Mehmet Vural">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f5f7; --panel: #ffffff; --ink: #14213d; --muted: #5b6475; --line: #e2e5eb;
+    --accent: #1f5aa6; --accent-soft: #e6eef9; --red: #c8102e; --green: #1b7f4b;
+    --c-mevduat: #1f5aa6; --c-usd: #1b7f4b; --c-eur: #7b3fb5; --c-altin: #c08a12;
+    --c-bist: #d4572a; --c-tl: #8a93a3; --c-tufe: #14213d;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1321; --panel: #151d2e; --ink: #e8ecf3; --muted: #9aa4b5; --line: #26314a;
+      --accent: #6aa3ef; --accent-soft: #1b2a45; --red: #f06a7d; --green: #4cc38a;
+      --c-mevduat: #6aa3ef; --c-usd: #4cc38a; --c-eur: #b48cf0; --c-altin: #e3b45a;
+      --c-bist: #f08a5d; --c-tl: #8a93a3; --c-tufe: #e8ecf3;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 Inter, system-ui, sans-serif; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 32px 16px 48px; }
+  header h1 { margin: 0 0 4px; font-size: 30px; letter-spacing: -0.02em; }
+  header p { margin: 0; color: var(--muted); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-top: 18px; }
+  .form { display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 14px; align-items: end; }
+  label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  input, select { width: 100%; font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+                  border-radius: 10px; padding: 10px 12px; }
+  .tarih { display: flex; gap: 6px; }
+  .tarih select { width: auto; min-width: 0; flex: 1 1 0; }
+  .tarih select:first-child { flex-grow: 1.4; }
+  .secenek { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; color: var(--muted); font-size: 14px; }
+  .secenek label { display: flex; gap: 6px; align-items: center; font-weight: 500; margin: 0; cursor: pointer; }
+  .secenek input { width: auto; }
+  .ozet { font-size: 17px; margin: 0 0 4px; }
+  .ozet b { font-size: 19px; }
+  .ozet-alt { color: var(--muted); margin: 0; font-size: 14px; }
+  .kartlar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+  .kart { border: 1px solid var(--line); border-left: 5px solid var(--renk); border-radius: 12px; padding: 14px 16px; background: var(--panel); }
+  .kart .ust { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .kart .ad { font-weight: 600; }
+  .kart .sira { font-size: 12px; color: var(--muted); }
+  .kart .deger { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; margin: 4px 0 2px; font-variant-numeric: tabular-nums; }
+  .kart .alt { font-size: 13px; color: var(--muted); }
+  .rozet { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-top: 6px; }
+  .rozet.arti { background: color-mix(in srgb, var(--green) 15%, transparent); color: var(--green); }
+  .rozet.eksi { background: color-mix(in srgb, var(--red) 13%, transparent); color: var(--red); }
+  .grafik-ust { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .grafik-ust h2 { font-size: 17px; margin: 0; }
+  .dugmeler { display: flex; gap: 6px; }
+  .dugme { border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 7px 12px; border-radius: 9px;
+           font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .dugme.aktif { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .grafik { position: relative; height: 380px; margin-top: 12px; }
+  .not { font-size: 13px; color: var(--muted); }
+  .not h3 { font-size: 14px; color: var(--ink); margin: 0 0 6px; }
+  .not ul { margin: 0; padding-left: 18px; }
+  .not li { margin: 3px 0; }
+  .paylas { margin-top: 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  footer { margin-top: 24px; font-size: 13px; color: var(--muted); text-align: center; }
+  footer a, .not a { color: var(--accent); }
+  @media (max-width: 760px) {
+    .wrap { padding-top: 20px; }
+    header h1 { font-size: 25px; }
+    .form { grid-template-columns: 1fr; }
+    .kartlar { grid-template-columns: 1fr 1fr; }
+    .kart .deger { font-size: 20px; }
+    .grafik { height: 300px; }
+  }
+  @media (max-width: 420px) { .kartlar { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Ne kadar ederdi?</h1>
+    <p>O zaman parayı mevduata, dolara, euroya, altına ya da borsaya yatırsaydınız bugün ne kadar ederdi? 2003'ten bu yana gerçek verilerle.</p>
+  </header>
+
+  <section class="panel">
+    <div class="form">
+      <div>
+        <label for="tutar">Tutar (TL)</label>
+        <input id="tutar" type="text" inputmode="numeric" value="2.000" autocomplete="off">
+      </div>
+      <div>
+        <label>Yatırım tarihi</label>
+        <div class="tarih"><select id="basAy" aria-label="Başlangıç ayı"></select><select id="basYil" aria-label="Başlangıç yılı"></select></div>
+      </div>
+      <div>
+        <label>Bozdurma tarihi</label>
+        <div class="tarih"><select id="sonAy" aria-label="Bitiş ayı"></select><select id="sonYil" aria-label="Bitiş yılı"></select></div>
+      </div>
+    </div>
+    <div class="secenek">
+      <label><input type="checkbox" id="stopaj" checked> Mevduatta %15 stopajı düş</label>
+    </div>
+  </section>
+
+  <section class="panel" id="sonuc">
+    <p class="ozet" id="ozet"></p>
+    <p class="ozet-alt" id="ozetAlt"></p>
+    <div class="kartlar" id="kartlar"></div>
+    <div class="paylas">
+      <button class="dugme" id="kopyala">🔗 Bu hesabın bağlantısını kopyala</button>
+      <span class="not" id="kopyalandi"></span>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="grafik-ust">
+      <h2 id="grafikBaslik">Paranın yolculuğu</h2>
+      <div class="dugmeler">
+        <button class="dugme aktif" data-mod="nominal">Cari TL</button>
+        <button class="dugme" data-mod="reel">Alım gücü</button>
+      </div>
+    </div>
+    <div class="grafik"><canvas id="cizim" aria-label="Yatırım değerinin zaman içindeki seyri"></canvas></div>
+    <p class="not" id="grafikNot"></p>
+  </section>
+
+  <section class="panel not">
+    <h3>Nasıl hesaplanıyor?</h3>
+    <ul>
+      <li><b>Mevduat:</b> Para her ay, o ay bankaların 3 aya kadar vadeli TL mevduata fiilen uyguladığı ağırlıklı ortalama faizin 1/12'si kadar büyür ve faiz anaparaya eklenir (TCMB). Stopaj seçiliyse faizin %15'i düşülür; gerçekte stopaj oranı yıllar içinde %0 ile %18 arasında değişti.</li>
+      <li><b>Dolar ve euro:</b> Başlangıç ayının ortalama kurundan alınır, bitiş ayının ortalama kurundan bozdurulur (Avrupa Merkez Bankası referans kurları).</li>
+      <li><b>Altın:</b> Gram altın = ons fiyatı ($) × dolar kuru ÷ 31,1035. Kuyumcu makası ve işçilik dahil değil (Dünya Bankası, aylık ortalama ons fiyatı).</li>
+      <li><b>BIST 100:</b> Ay sonu kapanış değerleri. Bu bir fiyat endeksi; temettüler dahil değil, yani hisse getirisini olduğundan düşük gösterir.</li>
+      <li><b>Alım gücü:</b> Sonuç, iki tarih arasındaki TÜFE artışına bölünür. "Alım gücü" değeri, paranın başlangıç tarihindeki fiyatlarla ne kadar mal alabileceğini gösterir.</li>
+      <li>Komisyon, kur makası ve diğer vergiler hesaba katılmadı. Geçmiş getiriler geleceğin göstergesi değildir; bu sayfa yatırım tavsiyesi değildir.</li>
+    </ul>
+    <p id="kaynakNot"></p>
+  </section>
+
+  <footer>
+    Hazırlayan <a href="https://www.linkedin.com/in/mehmetvrl/">Mehmet Vural</a> ·
+    <a href="https://github.com/mehmet-vural/ne-kadar-ederdi">Kaynak kodu ve veri</a>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const AYLAR = ["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+const VARLIKLAR = [
+  { id: "mevduat", ad: "TL mevduat", renk: "--c-mevduat" },
+  { id: "usd", ad: "Dolar", renk: "--c-usd" },
+  { id: "eur", ad: "Euro", renk: "--c-eur" },
+  { id: "altin", ad: "Gram altın", renk: "--c-altin" },
+  { id: "bist", ad: "BIST 100", renk: "--c-bist" },
+  { id: "tl", ad: "Yastık altı (TL)", renk: "--c-tl" },
+];
+const $ = id => document.getElementById(id);
+const tl = (x, ondalik = 0) => x.toLocaleString("tr-TR", { maximumFractionDigits: ondalik, minimumFractionDigits: ondalik }) + " TL";
+const yuzde = (x, d = 0) => (x >= 0 ? "+" : "−") + "%" + Math.abs(x * 100).toLocaleString("tr-TR", { maximumFractionDigits: d, minimumFractionDigits: d });
+const ayAdi = ym => { const [y, m] = ym.split("-"); return AYLAR[+m - 1] + " " + y; };
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+let V, grafik, mod = "nominal";
+
+function tutar() {
+  const t = parseFloat($("tutar").value.replace(/\./g, "").replace(",", "."));
+  return isFinite(t) && t > 0 ? t : 0;
+}
+
+function yilSecenekleri(sel, ilk, son, secili) {
+  sel.innerHTML = "";
+  for (let y = ilk; y <= son; y++) sel.add(new Option(y, y, false, y === secili));
+}
+function aySecenekleri(sel, secili) {
+  sel.innerHTML = "";
+  AYLAR.forEach((a, i) => sel.add(new Option(a, i + 1, false, i + 1 === secili)));
+}
+const indeks = (y, m) => V.aylar.indexOf(`${y}-${String(m).padStart(2, "0")}`);
+
+// i. aydan j. aya her varlığın büyüme çarpanı (j >= i)
+function seriler(i, j) {
+  const s = $("stopaj").checked ? 0.15 : 0;
+  const out = { mevduat: [1], usd: [], eur: [], altin: [], bist: [], tl: [], tufe: [] };
+  for (let k = i; k <= j; k++) {
+    if (k > i) out.mevduat.push(out.mevduat.at(-1) * (1 + V.faiz[k - 1] / 1200 * (1 - s)));
+    out.usd.push(V.usd[k] / V.usd[i]);
+    out.eur.push(V.eur[k] / V.eur[i]);
+    out.altin.push(V.altin_gram[k] / V.altin_gram[i]);
+    out.bist.push(V.bist[k] / V.bist[i]);
+    out.tl.push(1);
+    out.tufe.push(V.tufe[k] / V.tufe[i]);
+  }
+  return out;
+}
+
+function hesapla() {
+  let i = indeks($("basYil").value, $("basAy").value);
+  let j = indeks($("sonYil").value, $("sonAy").value);
+  if (i < 0) i = 0;
+  if (j < 0) j = V.aylar.length - 1;
+  if (j <= i) { j = Math.min(i + 1, V.aylar.length - 1); i = j - 1; ayarla(i, j); }
+
+  const T = tutar(), S = seriler(i, j), enf = S.tufe.at(-1);
+  const yil = (j - i) / 12;
+  const sonuc = VARLIKLAR.map(v => {
+    const carpan = S[v.id].at(-1);
+    return { ...v, deger: T * carpan, reel: carpan / enf - 1, yillikReel: Math.pow(carpan / enf, 1 / yil) - 1 };
+  }).sort((a, b) => b.deger - a.deger);
+
+  $("ozet").innerHTML = `<b>${ayAdi(V.aylar[i])} → ${ayAdi(V.aylar[j])}:</b> ${tl(T)}'nin alım gücünü korumak için <b>${tl(T * enf)}</b> gerekiyor.`;
+  $("ozetAlt").textContent = `Bu dönemde fiyatlar ${enf.toLocaleString("tr-TR", { maximumFractionDigits: 1 })} kat arttı (TÜFE). Enflasyonu yenen yatırımlar yeşil, yenemeyenler kırmızı işaretli.`;
+  $("kartlar").innerHTML = sonuc.map((r, n) => `
+    <div class="kart" style="--renk: var(${r.renk})">
+      <div class="ust"><span class="ad">${r.ad}</span><span class="sira">${n + 1}.</span></div>
+      <div class="deger">${tl(r.deger)}</div>
+      <div class="alt">${(r.deger / T).toLocaleString("tr-TR", { maximumFractionDigits: 1 })} kat · ${ayAdi(V.aylar[i])} fiyatlarıyla ${tl(r.deger / enf)}</div>
+      <span class="rozet ${r.reel >= 0 ? "arti" : "eksi"}">Alım gücü ${yuzde(r.reel)}${yil >= 1 ? ` · yılda ${yuzde(r.yillikReel, 1)}` : ""}</span>
+    </div>`).join("");
+
+  ciz(i, j, S, T);
+  const q = new URLSearchParams({ tutar: T, bas: V.aylar[i], son: V.aylar[j] });
+  if (!$("stopaj").checked) q.set("stopaj", "0");
+  history.replaceState(null, "", "?" + q);
+}
+
+function ciz(i, j, S, T) {
+  const etiket = V.aylar.slice(i, j + 1).map(ayAdi);
+  const reel = mod === "reel";
+  const veri = VARLIKLAR.map(v => ({
+    label: v.ad,
+    data: S[v.id].map((c, k) => T * c / (reel ? S.tufe[k] : 1)),
+    borderColor: css(v.renk), backgroundColor: css(v.renk),
+    borderWidth: v.id === "tl" ? 1.5 : 2, borderDash: v.id === "tl" ? [5, 4] : [], pointRadius: 0, tension: 0.15,
+  }));
+  if (!reel) veri.push({
+    label: "Alım gücünü korumak için gereken", data: S.tufe.map(c => T * c),
+    borderColor: css("--c-tufe"), backgroundColor: css("--c-tufe"), borderWidth: 2, borderDash: [2, 3], pointRadius: 0,
+  });
+  $("grafikBaslik").textContent = reel ? `Alım gücü (${ayAdi(V.aylar[i])} fiyatlarıyla)` : "Paranın yolculuğu (cari TL)";
+  $("grafikNot").textContent = reel
+    ? `Çizgiler, paranın ${ayAdi(V.aylar[i])} fiyatlarıyla ne kadar mal alabileceğini gösteriyor. ${tl(T)} çizgisinin üstünde kalan, enflasyonu yenmiş demektir.`
+    : "Dikey eksen logaritmik: Her eşit aralık, aynı oranda büyüme demek. Kesikli siyah çizgi, enflasyonla aynı hızda büyüyen para.";
+
+  const ayar = {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    interaction: { mode: "index", intersect: false },
+    scales: {
+      x: { ticks: { color: css("--muted"), autoSkip: false, maxRotation: 0, callback: (_, k) => yilEtiketi(etiket, k) },
+           grid: { display: false } },
+      y: { type: reel ? "linear" : "logarithmic", ticks: { color: css("--muted"), callback: v => tl(v) },
+           grid: { color: css("--line") } },
+    },
+    plugins: {
+      legend: { position: "bottom", labels: { color: css("--ink"), boxWidth: 14, boxHeight: 3 } },
+      tooltip: { itemSort: (a, b) => b.raw - a.raw, callbacks: { label: c => `${c.dataset.label}: ${tl(c.raw)}` } },
+    },
+  };
+  if (grafik) grafik.destroy();
+  grafik = new Chart($("cizim"), { type: "line", data: { labels: etiket, datasets: veri }, options: ayar });
+}
+
+// Eksende yalnızca yıllar: dönem uzunluğuna ve ekran genişliğine göre her n. yılın ocak ayı
+function yilEtiketi(etiket, k) {
+  const yilSayisi = etiket.length / 12, enFazla = innerWidth < 600 ? 5 : 10;
+  if (yilSayisi < 2) return k % 3 === 0 ? etiket[k] : null;
+  const adim = Math.ceil(yilSayisi / enFazla), [ay, yil] = etiket[k].split(" ");
+  return ay === "Ocak" && (+yil) % adim === 0 ? yil : null;
+}
+
+function ayarla(i, j) {
+  const [y1, m1] = V.aylar[i].split("-").map(Number), [y2, m2] = V.aylar[j].split("-").map(Number);
+  $("basYil").value = y1; $("basAy").value = m1; $("sonYil").value = y2; $("sonAy").value = m2;
+}
+
+fetch("veri.json").then(r => r.json()).then(d => {
+  V = d;
+  const ilk = +V.aylar[0].slice(0, 4), son = +V.aylar.at(-1).slice(0, 4);
+  const p = new URLSearchParams(location.search);
+  yilSecenekleri($("basYil"), ilk, son, ilk); yilSecenekleri($("sonYil"), ilk, son, son);
+  aySecenekleri($("basAy"), 1); aySecenekleri($("sonAy"), 12);
+  let i = V.aylar.indexOf(p.get("bas") || "2005-01"), j = V.aylar.indexOf(p.get("son") || "");
+  if (i < 0) i = V.aylar.indexOf("2005-01");
+  if (j < 0) j = V.aylar.length - 1;
+  ayarla(i, j);
+  if (p.get("tutar")) $("tutar").value = (+p.get("tutar")).toLocaleString("tr-TR");
+  if (p.get("stopaj") === "0") $("stopaj").checked = false;
+  $("kaynakNot").textContent = `Veri: ${ayAdi(V.aylar[0])} – ${ayAdi(V.aylar.at(-1))}. Kaynaklar: IMF (TÜFE), TCMB (mevduat faizi), Avrupa Merkez Bankası (kurlar), Dünya Bankası (altın), Borsa İstanbul / Yahoo Finance (BIST 100). Son güncelleme: ${V.guncelleme}.`;
+  hesapla();
+});
+
+["basAy", "basYil", "sonAy", "sonYil", "stopaj"].forEach(id => $(id).addEventListener("change", hesapla));
+$("tutar").addEventListener("input", () => {
+  const ham = $("tutar").value.replace(/[^\d]/g, "");
+  $("tutar").value = ham ? (+ham).toLocaleString("tr-TR") : "";
+  if (V) hesapla();
+});
+document.querySelectorAll("[data-mod]").forEach(b => b.addEventListener("click", () => {
+  mod = b.dataset.mod;
+  document.querySelectorAll("[data-mod]").forEach(x => x.classList.toggle("aktif", x === b));
+  hesapla();
+}));
+$("kopyala").addEventListener("click", async () => {
+  try { await navigator.clipboard.writeText(location.href); $("kopyalandi").textContent = "Kopyalandı."; }
+  catch { $("kopyalandi").textContent = location.href; }
+});
+</script>
+</body>
+</html>
