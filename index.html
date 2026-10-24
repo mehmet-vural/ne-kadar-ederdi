@@ -46,6 +46,7 @@
   .secenek { display: flex; gap: 18px; flex-wrap: wrap; margin-top: 14px; color: var(--muted); font-size: 14px; }
   .secenek label { display: flex; gap: 6px; align-items: center; font-weight: 500; margin: 0; cursor: pointer; }
   .secenek input { width: auto; }
+  .secenek select { padding: 6px 10px; }
   .ozet { font-size: 17px; margin: 0 0 4px; }
   .ozet b { font-size: 19px; }
   .ozet-alt { color: var(--muted); margin: 0; font-size: 14px; }
@@ -107,7 +108,14 @@
       </div>
     </div>
     <div class="secenek">
-      <label><input type="checkbox" id="stopaj" checked> Mevduatta %15 stopajı düş</label>
+      <label for="stopaj">Mevduat faizinden kesilen vergi (stopaj):</label>
+      <select id="stopaj" style="width:auto">
+        <option value="0">Yok (brüt faiz)</option>
+        <option value="5">%5</option>
+        <option value="10">%10</option>
+        <option value="15" selected>%15</option>
+        <option value="17.5">%17,5 (2026 oranı)</option>
+      </select>
     </div>
   </section>
 
@@ -136,7 +144,7 @@
   <section class="panel not">
     <h3>Nasıl hesaplanıyor?</h3>
     <ul>
-      <li><b>Mevduat:</b> Para her ay, o ay bankaların 3 aya kadar vadeli TL mevduata fiilen uyguladığı ağırlıklı ortalama faizin 1/12'si kadar büyür ve faiz anaparaya eklenir (TCMB). Stopaj seçiliyse faizin %15'i düşülür; gerçekte stopaj oranı yıllar içinde %0 ile %18 arasında değişti.</li>
+      <li><b>Mevduat:</b> Para her ay, o ay bankaların 3 aya kadar vadeli TL mevduata fiilen uyguladığı ağırlıklı ortalama faizin 1/12'si kadar büyür ve faiz anaparaya eklenir (TCMB). Seçtiğiniz stopaj oranı faizden düşülür; gerçekte bu oran yıllar içinde değişti (bugün 6 aya kadar vadede %17,5).</li>
       <li><b>Dolar ve euro:</b> Başlangıç ayının ortalama kurundan alınır, bitiş ayının ortalama kurundan bozdurulur (Avrupa Merkez Bankası referans kurları).</li>
       <li><b>Altın:</b> Gram altın = ons fiyatı ($) × dolar kuru ÷ 31,1035. Kuyumcu makası ve işçilik dahil değil (Dünya Bankası, aylık ortalama ons fiyatı).</li>
       <li><b>BIST 100:</b> Ay sonu kapanış değerleri. Bu bir fiyat endeksi; temettüler dahil değil, yani hisse getirisini olduğundan düşük gösterir.</li>
@@ -188,7 +196,7 @@ const indeks = (y, m) => V.aylar.indexOf(`${y}-${String(m).padStart(2, "0")}`);
 
 // i. aydan j. aya her varlığın büyüme çarpanı (j >= i)
 function seriler(i, j) {
-  const s = $("stopaj").checked ? 0.15 : 0;
+  const s = +$("stopaj").value / 100;
   const out = { mevduat: [1], usd: [], eur: [], altin: [], bist: [], tl: [], tufe: [] };
   for (let k = i; k <= j; k++) {
     if (k > i) out.mevduat.push(out.mevduat.at(-1) * (1 + V.faiz[k - 1] / 1200 * (1 - s)));
@@ -228,7 +236,7 @@ function hesapla() {
 
   ciz(i, j, S, T);
   const q = new URLSearchParams({ tutar: T, bas: V.aylar[i], son: V.aylar[j] });
-  if (!$("stopaj").checked) q.set("stopaj", "0");
+  if ($("stopaj").value !== "15") q.set("stopaj", $("stopaj").value);
   history.replaceState(null, "", "?" + q);
 }
 
@@ -292,7 +300,7 @@ fetch("veri.json").then(r => r.json()).then(d => {
   if (j < 0) j = V.aylar.length - 1;
   ayarla(i, j);
   if (p.get("tutar")) $("tutar").value = (+p.get("tutar")).toLocaleString("tr-TR");
-  if (p.get("stopaj") === "0") $("stopaj").checked = false;
+  if ([...$("stopaj").options].some(o => o.value === p.get("stopaj"))) $("stopaj").value = p.get("stopaj");
   $("kaynakNot").textContent = `Veri: ${ayAdi(V.aylar[0])} – ${ayAdi(V.aylar.at(-1))}. Kaynaklar: IMF (TÜFE), TCMB (mevduat faizi), Avrupa Merkez Bankası (kurlar), Dünya Bankası (altın), Borsa İstanbul / Yahoo Finance (BIST 100). Son güncelleme: ${V.guncelleme}.`;
   hesapla();
 });

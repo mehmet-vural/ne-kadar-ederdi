@@ -12,7 +12,7 @@ Tutarı ve iki tarihi seçin; sayfa altı yatırım seçeneğinin sonucunu hem c
 
 | Seçenek | Nasıl hesaplanıyor? | Kaynak |
 |---|---|---|
-| **TL mevduat** | Para her ay, bankaların 3 aya kadar vadeli TL mevduata fiilen uyguladığı ağırlıklı ortalama faizin 1/12'si kadar büyür (aylık bileşik). İsteğe bağlı %15 stopaj. | TCMB EVDS (TP.TRY.MT02) |
+| **TL mevduat** | Para her ay, bankaların 3 aya kadar vadeli TL mevduata fiilen uyguladığı ağırlıklı ortalama faizin 1/12'si kadar büyür (aylık bileşik). Stopaj oranı seçilebilir (yok, %5, %10, %15, %17,5). | TCMB EVDS (TP.TRY.MT02) |
 | **Dolar / Euro** | Başlangıç ayının ortalama kurundan alınır, bitiş ayının ortalama kurundan bozdurulur. | Avrupa Merkez Bankası referans kurları |
 | **Gram altın** | Ons fiyatı ($) × dolar kuru ÷ 31,1035 | Dünya Bankası Pink Sheet |
 | **BIST 100** | Ay sonu kapanış değeri (fiyat endeksi, temettü hariç) | Borsa İstanbul / Yahoo Finance |
@@ -35,11 +35,11 @@ Hesabın bağlantısı paylaşılabilir: [`?tutar=2000&bas=2005-01`](https://meh
 
 ## Veri hakkında bir not: Hangi mevduat faizi?
 
-Uluslararası veri tabanlarındaki (IMF, Dünya Bankası) Türkiye "deposit rate" serisi, bankaların **uygulayabileceği azami (tavan) faiz**. Ortalamayı yıllara göre 5–15 puan yüksek gösteriyor (ör. Ocak 2023: tavan %35, ortalama %15,5). Bu seriyle hesaplandığında 2005'ten bu yana mevduat, alım gücünü %168 artırmış görünüyor; gerçek ortalama faizle sonuç **−%7**. Bu yüzden hesaplayıcı TCMB'nin **fiilen uygulanan ağırlıklı ortalama** faizini kullanıyor.
+Uluslararası veri tabanlarındaki (IMF, Dünya Bankası) Türkiye "deposit rate" serisi, bankaların **uygulayabileceği azami (tavan) faiz**. Ortalamayı 2003–2026 boyunca ortalama 5 puan, bazı aylarda 25 puana kadar yüksek gösteriyor (ör. Ocak 2023: tavan %35, 3 aya kadar vadede ortalama %24,5). Bu seriyle hesaplandığında 2005'ten bu yana mevduat, alım gücünü %168 artırmış görünüyor; gerçek ortalama faizle (%15 stopaj) sonuç **−%7**. Bu yüzden hesaplayıcı TCMB'nin **fiilen uygulanan ağırlıklı ortalama** faizini kullanıyor.
 
 ## Sınırlılıklar
 
-- Mevduat hesabı aylık bileşik bir yaklaşım; gerçekte vade, banka ve tutara göre faiz farklıdır. Stopaj oranı yıllar içinde %0 ile %18 arasında değişti; hesaplayıcı tek bir oran (%15) kullanır.
+- Mevduat hesabı aylık bileşik bir yaklaşım; gerçekte vade, banka ve tutara göre faiz farklıdır. Stopaj oranı yıllar içinde değişti; hesaplayıcı seçilen tek bir oranı bütün döneme uygular. Sonuç bu orana çok duyarlı: 2005–2026 için stopajsız +%74, %15 stopajla −%7.
 - Kur makası, kuyumcu makası, işçilik, komisyon ve diğer vergiler dahil değil.
 - BIST 100 fiyat endeksi temettüleri içermez; hisse getirisini olduğundan düşük gösterir.
 - Aylık ortalama veriler kullanıldı; ay içindeki dalgalanmalar yansımaz.
@@ -48,7 +48,7 @@ Uluslararası veri tabanlarındaki (IMF, Dünya Bankası) Türkiye "deposit rate
 ## Çalıştırma
 
 ```bash
-pip install pandas openpyxl
+pip install pandas openpyxl matplotlib
 python veri_hazirla.py --indir   # verileri kaynaklardan indirir, veri.json'u üretir
 python -m http.server            # http://localhost:8000
 ```
@@ -61,6 +61,7 @@ Sayfa tek bir `index.html` dosyası; derleme gerektirmez. Grafik için Chart.js 
 index.html        Hesaplayıcı (HTML + JavaScript)
 veri.json         Sayfanın kullandığı aylık seri (2003–bugün)
 veri_hazirla.py   Veri indirme ve hazırlama
+analiz.py         Yazıdaki analizler ve grafikler (gorseller/)
 veri/aylik_seri.csv  Aynı serinin tablo hali
 ```
 
